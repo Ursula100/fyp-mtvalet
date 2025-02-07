@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'mt-valet-app.firebasestorage.app',
     measurementId: 'G-QHXQFJ4K8C',
   );
+
 }

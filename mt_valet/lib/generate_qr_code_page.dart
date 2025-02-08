@@ -50,7 +50,7 @@ class GenerateQRCodePageState extends State<GenerateQRCodePage> {
           ElevatedButton(
               onPressed: () {
                 setState(() {
-                  qrData =controller.text;
+                  qrData = controller.text;
                 });
               },
               child: const Text('GENERATE QR CODE'),

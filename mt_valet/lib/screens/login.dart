@@ -14,7 +14,7 @@ class LoginScreen extends StatelessWidget {
         children: [
           Image.asset(
             'assets/images/logo.jpg', 
-            height: 120, 
+            height: 100, 
           ),
           SizedBox(height: 16.0),
           Text("Login", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
@@ -70,25 +70,18 @@ class LoginScreen extends StatelessWidget {
               ),
               child: Text(
                 "Login",
-                style: TextStyle(fontWeight: FontWeight.w500),
+                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
               ),
             ),
           ),
           SizedBox(
             height: 8.0,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("Don't have an account ? "),
-              Text(
-                "Register",
-                style: TextStyle(
-                    color: Color(0xFF054CE5),
-                    decoration: TextDecoration.underline,
-                    decorationColor: Color(0xFF054CE5)),
-              ),
-            ],
+          // Alternative Login Text
+          const Text(
+            "Don't have an account ? Sign Up. ",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Color.fromARGB(255, 33, 114, 243)),
           ),
         ],
       ),

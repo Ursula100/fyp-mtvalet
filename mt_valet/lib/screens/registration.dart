@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mt_valet/screens/login.dart';
 
 class RegistrationScreen extends StatelessWidget {
   const RegistrationScreen({super.key});
@@ -9,7 +10,7 @@ class RegistrationScreen extends StatelessWidget {
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(24.0, 64.0, 24.0, 64.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 64.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -17,7 +18,7 @@ class RegistrationScreen extends StatelessWidget {
               // App Logo
               Image.asset(
                 'assets/images/logo.jpg',
-                height: 80,
+                height: 100,
               ),
               const SizedBox(height: 8),
 
@@ -28,9 +29,9 @@ class RegistrationScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ), */
               const Text(
-                'Sign Up For an Account',
+                'Sign Up',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 24),
 
@@ -58,7 +59,9 @@ class RegistrationScreen extends StatelessWidget {
                     ),
                   ),
 
-                  SizedBox(width: 4.0,),
+                  SizedBox(
+                    width: 4.0,
+                  ),
 
                   // Last Name
                   Expanded(
@@ -142,9 +145,9 @@ class RegistrationScreen extends StatelessWidget {
                     // Registration logic
                   },
                   style: ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(Color(0xFF054CE5)),
+                    backgroundColor: WidgetStatePropertyAll(Color.fromARGB(255, 5, 76, 229)),
                     foregroundColor: WidgetStatePropertyAll(
-                     Color.fromARGB(255, 255, 255, 255),
+                      Color.fromARGB(255, 255, 255, 255),
                     ),
                   ),
                   child: const Text(
@@ -153,13 +156,18 @@ class RegistrationScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 16),
 
-              // Alternative Login Text
-              const Text(
-                'Already have an account? Log in.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Color.fromARGB(255, 33, 114, 243)),
+              GestureDetector(
+                // Alternative Login Text
+                onTap: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+                },
+                child: const Text(
+                  'Already have an account? Log in.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Color.fromARGB(255, 5, 76, 229)),
+                ),
               ),
             ],
           ),

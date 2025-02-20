@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mt_valet/screens/registration.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -6,18 +7,18 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Padding(
-      padding: const EdgeInsets.all(32.0),
+      body: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        //crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset(
             'assets/images/logo.jpg', 
             height: 100, 
           ),
-          SizedBox(height: 16.0),
-          Text("Login", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),),
+          SizedBox(height: 8.0),
+          Text("Login", style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),),
           SizedBox(
             height: 24.0,
           ),
@@ -77,11 +78,17 @@ class LoginScreen extends StatelessWidget {
           SizedBox(
             height: 8.0,
           ),
-          // Alternative Login Text
-          const Text(
-            "Don't have an account ? Sign Up. ",
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Color.fromARGB(255, 33, 114, 243)),
+          
+          GestureDetector(
+            // Alternative Login Text
+            onTap: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context) => RegistrationScreen()));
+            },
+            child: const Text(
+              "Don't have an account ? Sign Up. ",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Color.fromARGB(255, 33, 114, 243)),
+            ),
           ),
         ],
       ),

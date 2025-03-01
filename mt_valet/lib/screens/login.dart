@@ -17,45 +17,37 @@ class LoginScreen extends StatelessWidget {
             'assets/images/logo.jpg', 
             height: 100, 
           ),
+
           SizedBox(height: 8.0),
+
           Text("Login", style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),),
-          SizedBox(
-            height: 24.0,
-          ),
-          Row(children: [
-            Text(
-              "Email",
-              textAlign: TextAlign.start,
-              style: TextStyle(fontWeight: FontWeight.w500),
-            ),
-          ]),
-          SizedBox(height: 4.0),
+
+          SizedBox(height: 24.0,),
+
+          //Email
           TextField(
-            decoration: InputDecoration(
-              hintText: "Enter your email address",
-              border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText: "Enter your email address",
+                border: OutlineInputBorder(),
+                label: Text("Email")
+              ),
+              keyboardType: TextInputType.emailAddress,
             ),
-            keyboardType: TextInputType.emailAddress,
-          ),
-          SizedBox(
-            height: 16.0,
-          ),
-          Row(children: [
-            Text(
-              "Password",
-              textAlign: TextAlign.start,
-              style: TextStyle(fontWeight: FontWeight.w500),
-            ),
-          ]),
-          SizedBox(height: 4.0),
+          SizedBox(height: 16.0,),
+
+          //Password
           TextField(
             decoration: InputDecoration(
               hintText: "Enter your password",
               border: OutlineInputBorder(),
+              label: Text("Password")
             ),
             obscureText: true,
           ),
+
           SizedBox(height: 32.0),
+
+          //Login Button
           SizedBox(
             width: double.infinity,
             height: 48,
@@ -75,12 +67,12 @@ class LoginScreen extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
-            height: 8.0,
-          ),
+
+          const SizedBox(height: 16),
           
+          //Go to Registration screen
           GestureDetector(
-            // Alternative Login Text
+            //Signup Text
             onTap: (){
               Navigator.push(context, MaterialPageRoute(builder: (context) => RegistrationScreen()));
             },

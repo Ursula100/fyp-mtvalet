@@ -2,8 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mt_valet/screens/login.dart';
 
-class RegistrationScreen extends StatelessWidget {
+class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
+
+  @override
+  State<RegistrationScreen> createState() => _RegistrationScreenState();
+}
+
+class _RegistrationScreenState extends State<RegistrationScreen> {
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +37,6 @@ class RegistrationScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
 
-              // Registration Prompt
-              /* const Text(
-                'Register to create an account',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ), */
               const Text(
                 'Sign Up',
                 textAlign: TextAlign.center,
@@ -42,15 +51,18 @@ class RegistrationScreen extends StatelessWidget {
                   Expanded(
                     child: Column(
                       children: [
-                        const Align(
+                        /*const Align(
                           alignment: Alignment.centerLeft,
                           child: Text('First Name'),
-                        ),
-                        const SizedBox(height: 4),
+                        ),*/
+                        //const SizedBox(height: 4),
                         TextField(
                           decoration: const InputDecoration(
-                            hintText: 'Your first name',
+                            //hintText: 'Enter your First name',
                             border: OutlineInputBorder(),
+                            //contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                            label: Text("First Name"),
+                            counterText: "",
                           ),
                           maxLength: 25,
                           maxLengthEnforcement: MaxLengthEnforcement.enforced,
@@ -67,74 +79,69 @@ class RegistrationScreen extends StatelessWidget {
                   Expanded(
                     child: Column(
                       children: [
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text('Last Name'),
-                        ),
-                        const SizedBox(height: 4),
                         TextField(
                           decoration: const InputDecoration(
-                            hintText: 'Your last name',
+                            //hintText: 'Your last name',
                             border: OutlineInputBorder(),
+                            //contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                            label: Text("Last Name"),
+                            counterText: "",
                           ),
                           maxLength: 25,
+                          maxLengthEnforcement: MaxLengthEnforcement.enforced,
                         ),
                       ],
                     ),
                   ),
                 ],
               ),
+              const SizedBox(height: 16),
 
-              // Email
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Email Address'),
-              ),
-              const SizedBox(height: 4),
+              
+              //Email
               TextField(
                 decoration: const InputDecoration(
-                  hintText: 'Enter your email',
+                  //hintText: 'Enter your email',
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                  //contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                  label: Text("Email"),
+                  counterText: "",
                 ),
                 keyboardType: TextInputType.emailAddress,
                 maxLength: 25,
-              ),
-              const SizedBox(height: 8),
-
-              // Password
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Password'),
-              ),
-              const SizedBox(height: 4),
-              TextField(
-                decoration: const InputDecoration(
-                  hintText: 'Enter your password',
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                ),
-                obscureText: true,
-                maxLength: 25,
-              ),
-              const SizedBox(height: 8),
-
-              // Confirm Password
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Confirm Password'),
-              ),
-              const SizedBox(height: 4),
-              TextField(
-                decoration: const InputDecoration(
-                  hintText: 'Re-enter your password',
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                ),
-                obscureText: true,
-                maxLength: 25,
+                maxLengthEnforcement: MaxLengthEnforcement.enforced,
               ),
               const SizedBox(height: 16),
+
+              //Password
+              TextField(
+                decoration: const InputDecoration(
+                  //hintText: 'Enter your password',
+                  border: OutlineInputBorder(),
+                  //contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                  label: Text("Password"),
+                  counterText: "",
+                ),
+                obscureText: true,
+                maxLength: 25,
+                maxLengthEnforcement: MaxLengthEnforcement.enforced,
+              ),
+              const SizedBox(height: 16),
+
+              // Confirm Password
+              TextField(
+                decoration: const InputDecoration(
+                  //hintText: 'Re-enter your password',
+                  border: OutlineInputBorder(),
+                  //contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                  label: Text("Confirm Password"),
+                  counterText: "",
+                ),
+                obscureText: true,
+                maxLength: 25,
+                maxLengthEnforcement: MaxLengthEnforcement.enforced,
+              ),
+              const SizedBox(height: 32),
 
               // Register Button
               SizedBox(

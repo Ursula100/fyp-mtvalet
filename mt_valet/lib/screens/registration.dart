@@ -23,7 +23,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   TextEditingController _confirmPasswordController = TextEditingController();
 
   bool _isPasswordValid = false;
+  bool _isEmailValid = false;
   bool _showPasswordCriteria = false; // Track if user started typing
+  bool _showEmailCriteria = false;
+
   final Map<String, bool> _passwordCriteria = {
     "At least 8 characters": false,
     "At least one uppercase letter": false,
@@ -63,6 +66,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       if (_isPasswordValid) {
         _showPasswordCriteria = false;
       }
+    });
+  }
+
+  // Validate Email Format
+  void _validateEmail(String email) {
+    email = email.trim();  // Trim the email to remove leading/trailing spaces
+
+    setState(() {
+      // Show email criteria only when the user starts typing
+      _showEmailCriteria = email.isNotEmpty;
+      _isEmailValid = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(email);
     });
   }
 
@@ -158,10 +172,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   keyboardType: TextInputType.emailAddress,
                   maxLength: 25,
                   maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                  onChanged: (value) {
+                    _validateEmail(value);
+                  },
                   validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Email is required';
+                    if (_showEmailCriteria){
+                      return 'Please enter a valid email address';
                     }
+                    else if (!_isEmailValid) {
+                      return 'Email is required';
+                    } 
                     return null;
                   },
                 ),
@@ -178,7 +198,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     obscureText: true,
                     maxLength: 25,
                     maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                    onChanged: _validatePassword),
+                    onChanged: _validatePassword
+                ),
 
                 // Dynamic Password Strength Feedback
                 // Inline conditional widget rendering using the ...[ spread operator.
@@ -240,13 +261,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   width: double.infinity,
                   height: 48,
                   child: ElevatedButton(
-                    onPressed: _isPasswordValid
-                        ? () {
-                            if (_formKey.currentState!.validate()) {
-                              _signup();
-                            }
-                          }
-                        : null,
+                    onPressed: () {
+                      // First validate the form, then check the password validity
+                      if (_formKey.currentState!.validate() && _isPasswordValid) {
+                        _signup();
+                      }
+                    },
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(_isPasswordValid
                           ? const Color.fromARGB(255, 5, 76, 229)

@@ -15,8 +15,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final FirebaseAuthServices _auth = FirebaseAuthServices();
   
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+
+  String? _errorMessage; // Variable to hold the login error message
 
   @override
   void dispose() {
@@ -47,6 +50,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 8.0),
         
                 const Text("Login", style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+
+                const SizedBox(height: 16.0),
+
+                // Error Message if any
+                if (_errorMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.all(0.0),
+                    child: Text(
+                      _errorMessage!,
+                      style: TextStyle(color: Colors.red, fontSize: 16),
+                    ),
+                  ),
         
                 const SizedBox(height: 24.0),
         
@@ -163,8 +178,11 @@ class _LoginScreenState extends State<LoginScreen> {
     else {
       // Registration Failed
       if(mounted){
+        setState(() {
+            _errorMessage = "Incorrect email or password.";
+        });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Login Failed! Check your details."))
+          SnackBar(content: Text("Login Failed!"))
         );
       }
     }

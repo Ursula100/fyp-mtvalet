@@ -15,12 +15,22 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final FirebaseAuthServices _auth = FirebaseAuthServices();
-  
+
   TextEditingController _firstNameController = TextEditingController();
   TextEditingController _lastNameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _confirmPasswordController = TextEditingController();
+
+  bool _isPasswordValid = false;
+  bool _showPasswordCriteria = false; // Track if user started typing
+  final Map<String, bool> _passwordCriteria = {
+    "At least 8 characters": false,
+    "At least one uppercase letter": false,
+    "At least one lowercase letter": false,
+    "At least one number": false,
+    "At least one special character (!@#\$%^&*)": false,
+  };
 
   @override
   void dispose() {
@@ -30,6 +40,30 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  // Password Validation Function
+  void _validatePassword(String value) {
+    setState(() {
+      _showPasswordCriteria = value.isNotEmpty; // Show criteria when user types
+
+      _passwordCriteria["At least 8 characters"] = value.length >= 8;
+      _passwordCriteria["At least one uppercase letter"] =
+          RegExp(r'[A-Z]').hasMatch(value);
+      _passwordCriteria["At least one lowercase letter"] =
+          RegExp(r'[a-z]').hasMatch(value);
+      _passwordCriteria["At least one number"] =
+          RegExp(r'[0-9]').hasMatch(value);
+      _passwordCriteria["At least one special character (!@#\$%^&*)"] =
+          RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value);
+
+      _isPasswordValid = _passwordCriteria.values.every((isValid) => isValid);
+
+      // Hide criteria if all conditions are met
+      if (_isPasswordValid) {
+        _showPasswordCriteria = false;
+      }
+    });
   }
 
   @override
@@ -135,22 +169,47 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
                 // Password
                 TextFormField(
-                  controller: _passwordController,
-                  decoration: const InputDecoration(
-                    label: Text("Password"),
-                    border: OutlineInputBorder(),
-                    counterText: "", // Hide the counter
+                    controller: _passwordController,
+                    decoration: const InputDecoration(
+                      label: Text("Password"),
+                      border: OutlineInputBorder(),
+                      counterText: "", // Hide the counter
+                    ),
+                    obscureText: true,
+                    maxLength: 25,
+                    maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                    onChanged: _validatePassword),
+
+                // Dynamic Password Strength Feedback
+                // Inline conditional widget rendering using the ...[ spread operator.
+                // The spread operator ... expands a list of widgets into the surrounding widget tree.
+                // Because The build method expects a list of widgets, but an if statement does not return a widget list.
+                if(_showPasswordCriteria) ...[
+                  SizedBox(height: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: _passwordCriteria.entries.map((entry) {
+                      return Row(
+                        children: [
+                          Icon(
+                            entry.value ? Icons.check_circle : Icons.cancel,
+                            color: entry.value ? Colors.green : Colors.red,
+                            size: 18,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            entry.key,
+                            style: TextStyle(
+                              color: entry.value ? Colors.green : Colors.red,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      );
+                    }).toList(),
                   ),
-                  obscureText: true,
-                  maxLength: 25,
-                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Password is required';
-                    }
-                    return null;
-                  },
-                ),
+                ],
+
                 const SizedBox(height: 16),
 
                 // Confirm Password
@@ -181,15 +240,19 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   width: double.infinity,
                   height: 48,
                   child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        // Registration logic
-                        _singup();
-                      }
-                    },
+                    onPressed: _isPasswordValid
+                        ? () {
+                            if (_formKey.currentState!.validate()) {
+                              _signup();
+                            }
+                          }
+                        : null,
                     style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(const Color.fromARGB(255, 5, 76, 229)),
-                      foregroundColor: WidgetStateProperty.all(const Color.fromARGB(255, 255, 255, 255)),
+                      backgroundColor: WidgetStateProperty.all(_isPasswordValid
+                          ? const Color.fromARGB(255, 5, 76, 229)
+                          : const Color.fromARGB(255, 49, 90, 179)),
+                      foregroundColor: WidgetStateProperty.all(
+                          const Color.fromARGB(255, 255, 255, 255)),
                     ),
                     child: const Text(
                       'Register',
@@ -204,7 +267,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   onTap: () {
                     Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const LoginScreen()));
+                        MaterialPageRoute(
+                            builder: (context) => const LoginScreen()));
                   },
                   child: RichText(
                     textAlign: TextAlign.center,
@@ -237,7 +301,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 
-  void _singup() async {
+  void _signup() async {
     String firstName = _firstNameController.text;
     String lastName = _lastNameController.text;
     String email = _emailController.text;
@@ -246,18 +310,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     // Call the sign-up method from FirebaseAuthServices
     User? user = await _auth.signUpWithEmailAndPassword(email, password);
 
-    if(user!=null){
+    if (user != null) {
       // Check if the widget is still mounted before navigating
-      if(mounted){
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+      if (mounted) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()));
       }
-    }
-    else {
+    } else {
       // Registration Failed
-      if(mounted){
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Registration Failed! Please try again."))
-        );
+            SnackBar(content: Text("Registration Failed! Please try again.")));
       }
     }
   }

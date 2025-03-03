@@ -74,9 +74,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     email = email.trim();  // Trim the email to remove leading/trailing spaces
 
     setState(() {
-      // Show email criteria only when the user starts typing
-      _showEmailCriteria = email.isNotEmpty;
+      // Validate email format using regex
       _isEmailValid = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(email);
+      
+      // If email is valid, hide criteria message
+      _showEmailCriteria = ! _isEmailValid; // Show email criteria when email is invalid
     });
   }
 
@@ -176,13 +178,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     _validateEmail(value);
                   },
                   validator: (value) {
-                    if (_showEmailCriteria){
-                      return 'Please enter a valid email address';
-                    }
-                    else if (!_isEmailValid) {
+                    if (value == null || value.trim().isEmpty) {
                       return 'Email is required';
                     } 
-                    return null;
+                    else if (_showEmailCriteria){
+                      return 'Please enter a valid email address';
+                    }
+                    return null; //valid email
                   },
                 ),
                 const SizedBox(height: 16),

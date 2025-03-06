@@ -18,7 +18,7 @@ class GenerateQRCodePageState extends State<GenerateQRCodePage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: const Text('MT Valet', textAlign: TextAlign.start,),
+        title: const Text('MT Valet',),
         backgroundColor: const Color.fromRGBO(17, 99, 239, 1),
         foregroundColor: Colors.white,
       ),

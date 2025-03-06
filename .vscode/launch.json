@@ -1,0 +1,28 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "mt_valet",
+            "cwd": "mt_valet",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "mt_valet (profile mode)",
+            "cwd": "mt_valet",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "mt_valet (release mode)",
+            "cwd": "mt_valet",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}

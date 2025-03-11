@@ -17,7 +17,8 @@ class GenerateQRCodePageState extends State<GenerateQRCodePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('MT Valet'),
+        centerTitle: false,
+        title: const Text('MT Valet',),
         backgroundColor: const Color.fromRGBO(17, 99, 239, 1),
         foregroundColor: Colors.white,
       ),
@@ -50,7 +51,7 @@ class GenerateQRCodePageState extends State<GenerateQRCodePage> {
           ElevatedButton(
               onPressed: () {
                 setState(() {
-                  qrData =controller.text;
+                  qrData = controller.text;
                 });
               },
               child: const Text('GENERATE QR CODE'),

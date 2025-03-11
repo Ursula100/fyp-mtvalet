@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/Users/ursulat/development/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/ursulat/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/ursulat/Flutter_Projects/fyp-mtvalet/mt_valet/android/app/.cxx/Debug/63331a2j/x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/ursulat/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/ursulat/Flutter_Projects/fyp-mtvalet/mt_valet/android/app/.cxx/Debug/63331a2j/x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

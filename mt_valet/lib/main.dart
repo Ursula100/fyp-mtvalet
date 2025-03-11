@@ -1,7 +1,26 @@
-import 'package:flutter/material.dart';
-import 'package:mt_valet/generate_qr_code_page.dart';
+import 'dart:io';
 
-void main() {
+import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mt_valet/screens/login.dart';
+//import 'package:mt_valet/screens/registration.dart';
+import 'firebase_options.dart';
+
+
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: "assets/.env");
+  if (Platform.isAndroid) {
+    // Initialize Firebase without options on Android
+    await Firebase.initializeApp();
+  } else {
+    // Initialize Firebase with options on iOS, web
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
   runApp(const MyApp());
 }
 
@@ -13,7 +32,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primaryColor: const Color.fromARGB(255, 5, 132, 236)),
-      home: const GenerateQRCodePage(),
+      home: const LoginScreen(),
     );
   }
 }

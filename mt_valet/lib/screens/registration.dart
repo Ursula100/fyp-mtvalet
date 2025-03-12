@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mt_valet/firebase_auth.dart';
@@ -328,22 +329,50 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     String lastName = _lastNameController.text;
     String email = _emailController.text;
     String password = _passwordController.text;
+    
+    try{
+      // Call the sign-up method from FirebaseAuthServices
+      User? user = await _auth.signUpWithEmailAndPassword(email, password);
 
-    // Call the sign-up method from FirebaseAuthServices
-    User? user = await _auth.signUpWithEmailAndPassword(email, password);
+      if (user != null) {
 
-    if (user != null) {
-      // Check if the widget is still mounted before navigating
-      if (mounted) {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const LoginScreen()));
+        // Save user data to Firestore
+        await saveUserToFirestore(user.uid, firstName, lastName, email);
+
+
+        // Check if the widget is still mounted before navigating
+        if (mounted) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => const LoginScreen()));
+        }
+      } else {
+        // Registration Failed
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text("Registration Failed! Please try again.")));
+        }
       }
-    } else {
-      // Registration Failed
+    } catch (e) {
+      // If registration fails, show error message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Registration Failed! Please try again.")));
+          SnackBar(content: Text("Registration Failed! ${e.toString()}")),
+        );
       }
     }
+  }
+
+  Future<void> saveUserToFirestore(String userId, String firstName, String lastName, String email) async {
+    try {
+      await FirebaseFirestore.instance.collection("customers").doc(userId).set({
+        "CustomerId": userId,
+        "firstName": firstName,
+        "lastName": lastName,
+        "email": email,
+        "points": 0, // Initial loyalty points
+      });
+    } catch (e) {
+        throw Exception("Error saving user to Firestore: ${e.toString()}");
+      }
   }
 }

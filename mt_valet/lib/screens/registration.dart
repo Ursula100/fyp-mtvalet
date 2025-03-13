@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mt_valet/firebase_auth.dart';
+import 'package:mt_valet/firestore_user.dart';
 import 'package:mt_valet/screens/login.dart';
 
 class RegistrationScreen extends StatefulWidget {
@@ -16,6 +17,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final FirebaseAuthServices _auth = FirebaseAuthServices();
+  final FirestoreUserService _userService = FirestoreUserService();
 
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
@@ -329,50 +331,58 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     String lastName = _lastNameController.text;
     String email = _emailController.text;
     String password = _passwordController.text;
-    
-    try{
+
+    try {
       // Call the sign-up method from FirebaseAuthServices
       User? user = await _auth.signUpWithEmailAndPassword(email, password);
 
       if (user != null) {
+        try {
+          // Save user data to Firestore
+          await _userService.saveUserToFirestore(user.uid, firstName, lastName, email);
 
-        // Save user data to Firestore
-        await saveUserToFirestore(user.uid, firstName, lastName, email);
+          // If successful, navigate to the Login screen
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginScreen())
+            );
+          }
+        } catch (e) {
+          // Handle Firestore saving failure
+          _showErrorSnackBar("Error saving user data: ${e.toString()}");
 
+          // Delete the Firebase Authentication user since Firestore save failed
+          await user.delete();  // Remove user from Firebase Authentication
 
-        // Check if the widget is still mounted before navigating
-        if (mounted) {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const LoginScreen()));
-        }
-      } else {
-        // Registration Failed
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Registration Failed! Please try again.")));
+          // Do not redirect to the login screen, as the registration failed completely
+          // Show a failure message instead
+          if (mounted) {
+            _showErrorSnackBar("Registration failed, and user data has been removed.");
+          }
         }
       }
     } catch (e) {
-      // If registration fails, show error message
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Registration Failed! ${e.toString()}")),
-        );
+      // Handle Firebase Authentication exceptions
+      if (e is FirebaseAuthException) {
+        if (e.code == 'email-already-in-use') {
+          _showErrorSnackBar("Email is already registered. Please use another email.");
+        } else if (e.code == 'network-request-failed') {
+          _showErrorSnackBar("Network error. Please check your connection and try again.");
+        } else {
+          _showErrorSnackBar("Registration Failed! ${e.message}");
+        }
+      } else {
+        _showErrorSnackBar("Registration Failed! ${e.toString()}");
       }
     }
   }
 
-  Future<void> saveUserToFirestore(String userId, String firstName, String lastName, String email) async {
-    try {
-      await FirebaseFirestore.instance.collection("customers").doc(userId).set({
-        "CustomerId": userId,
-        "firstName": firstName,
-        "lastName": lastName,
-        "email": email,
-        "points": 0, // Initial loyalty points
-      });
-    } catch (e) {
-        throw Exception("Error saving user to Firestore: ${e.toString()}");
-      }
+  void _showErrorSnackBar(String message) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    }
   }
 }

@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mt_valet/firebase_auth.dart';
-import 'package:mt_valet/generate_qr_code_page.dart';
+import 'package:mt_valet/screens/customer_home.dart';
 import 'package:mt_valet/screens/registration.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -172,7 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if(user!=null){
       // Check if the widget is still mounted before navigating
       if(mounted){
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const GenerateQRCodePage()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const CustomerHomeScreen()));
       }
     }
     else {

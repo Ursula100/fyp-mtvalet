@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class GenerateQRCodePage extends StatefulWidget {
-  const GenerateQRCodePage ({super.key});
+class CustomerHomeScreen extends StatefulWidget {
+  const CustomerHomeScreen ({super.key});
 
   @override
-  GenerateQRCodePageState createState() => GenerateQRCodePageState();
+  CustomerHomeScreenState createState() => CustomerHomeScreenState();
 }
 
-class GenerateQRCodePageState extends State<GenerateQRCodePage> {
+class CustomerHomeScreenState extends State<CustomerHomeScreen> {
   TextEditingController controller = TextEditingController();
 
  late String qrData; // To store the current user's UID

@@ -16,7 +16,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   final TextEditingController oldPointsController = TextEditingController();
   final TextEditingController updatedPointsController = TextEditingController();
   
-  bool isScanning = true; // Controls scanner visibility
+  bool isScanning = true; // Controls scanning
 
   void getCustomerDetailsAndUpdatePoints(String userId) async {
     try {
@@ -34,7 +34,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           nameController.text = fullName;
           oldPointsController.text = currentPoints.toString();
           updatedPointsController.text = newPoints.toString();
-          isScanning = false; // Stop scanning
+          isScanning = false; // Pause scanning but keep scanner visible
         });
 
         // Update Firestore

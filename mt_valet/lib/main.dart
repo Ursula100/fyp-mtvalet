@@ -3,11 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:mt_valet/screens/login.dart';
-//import 'package:mt_valet/screens/registration.dart';
 import 'firebase_options.dart';
-
-
+import 'package:mt_valet/screens/auth/login.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,8 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:mt_valet/firebase_auth.dart';
-import 'package:mt_valet/screens/customer_home.dart';
-import 'package:mt_valet/screens/registration.dart';
+import 'package:mt_valet/screens/admin/admin_home.dart';
+import 'package:mt_valet/services/firebase_auth.dart';
+import 'package:mt_valet/services/firestore_user.dart';
+import 'package:mt_valet/screens/customer/customer_home.dart';
+import 'package:mt_valet/screens/auth/registration.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,7 +15,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
 
   final FirebaseAuthServices _auth = FirebaseAuthServices();
-  
+  final FirestoreUserService _user = FirestoreUserService();
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -167,20 +169,51 @@ class _LoginScreenState extends State<LoginScreen> {
     String password = _passwordController.text;
 
     // Call the sign-up method from FirebaseAuthServices
-    User? user = await _auth.signInWithEmailAndPassword(email, password);
+    final user = await _auth.signInWithEmailAndPassword(email, password);
+    
 
-    if(user!=null){
-      // Check if the widget is still mounted before navigating
-      if(mounted){
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const CustomerHomeScreen()));
-      }
+    if(user != null){
+
+      final userEmail = user.email;
+
+      await loginPerType(userEmail as String);
     }
     else {
-      // Registration Failed
+      // Login failed
       if(mounted){
         setState(() {
             _errorMessage = "Incorrect email or password.";
         });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Login Failed!"))
+        );
+      }
+    }
+  }
+
+  Future<void> loginPerType(String email) async {
+    try {
+      final isCustomer = await _user.isCustomer(email);
+
+      if (isCustomer) { // User is a customer
+        if (mounted) {
+          // Navigate to admin Screen
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => CustomerHomeScreen()),
+          );
+        }
+      } else {
+        if (mounted) {
+          // Navigate to customer Screen
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => AdminHomeScreen()),
+          );
+        }
+      }
+    } catch (e) {
+      if(mounted){
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Login Failed!"))
         );

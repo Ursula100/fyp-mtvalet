@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mt_valet/firebase_auth.dart';
-import 'package:mt_valet/firestore_user.dart';
-import 'package:mt_valet/screens/login.dart';
+import 'package:mt_valet/services/firebase_auth.dart';
+import 'package:mt_valet/services/firestore_user.dart';
+import 'package:mt_valet/screens/auth/login.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -366,14 +365,22 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       // Handle Firebase Authentication exceptions
       if (e is FirebaseAuthException) {
         if (e.code == 'email-already-in-use') {
-          _showErrorSnackBar("Email is already registered. Please use another email.");
+          if(mounted){
+            _showErrorSnackBar("Email is already registered. Please use another email.");
+          }
         } else if (e.code == 'network-request-failed') {
-          _showErrorSnackBar("Network error. Please check your connection and try again.");
+          if(mounted){
+            _showErrorSnackBar("Network error. Please check your connection and try again.");
+          }
         } else {
-          _showErrorSnackBar("Registration Failed! ${e.message}");
+          if(mounted){
+           _showErrorSnackBar("Registration Failed! ${e.message}");
+          }
         }
       } else {
-        _showErrorSnackBar("Registration Failed! ${e.toString()}");
+        if(mounted){
+          _showErrorSnackBar("Registration Failed! ${e.toString()}");
+        }
       }
     }
   }

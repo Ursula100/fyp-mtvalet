@@ -13,8 +13,8 @@ class QRScannerWidget extends StatefulWidget {
 
 class QRScannerWidgetState extends State<QRScannerWidget> {
   final MobileScannerController scannerController = MobileScannerController(
-    torchEnabled: false,  // Ensures iOS compatibility
     detectionSpeed: DetectionSpeed.normal,
+    formats: const [BarcodeFormat.qrCode],
     facing: CameraFacing.back,
   );
 
@@ -22,35 +22,49 @@ class QRScannerWidgetState extends State<QRScannerWidget> {
   void initState() {
     super.initState();
     if (widget.isScanning) {
-      scannerController.start();  // Start scanning when isScanning is true
-    } 
+      scannerController.start();
+    } else {
+      scannerController.pause();
+    }
   }
 
   @override
   void didUpdateWidget(covariant QRScannerWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.isScanning != oldWidget.isScanning) {
-      if (widget.isScanning) {
-        scannerController.start();  // Start scanning when widget is first created
-      } else {
-        scannerController.pause();  // Pause scanning
-      }
+    if (widget.isScanning) {
+      scannerController.start();
+    } else {
+      scannerController.pause();
     }
   }
 
   @override
+  void dispose() {
+    scannerController.stop(); // Only stop when leaving screen
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 300,
-      child: MobileScanner(
-        controller: scannerController,
-        onDetect: (BarcodeCapture capture) { //BarcodeCapture is an object containing all barcodes detected in a frame. It has a property called .barcodes, which is a list of barcodes found in the scanned image.
-          final List<Barcode> barcodes = capture.barcodes; //extracts the list of detected barcodes from the capture object. If no QR code is found, barcodes will be an empty list.
-          if (barcodes.isNotEmpty && barcodes.first.rawValue != null) { //gets the first detected barcode. .rawValue is the actual text encoded in the barcode (e.g., a customer ID or URL). If this value is null, the QR code might be unreadable.
-            widget.onScanned(barcodes.first.rawValue!);
-            scannerController.pause();  // Pause scanning after a barcode is detected
-          }
-        },
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.33,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.blueAccent, width: 2),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: MobileScanner(
+          controller: scannerController,
+          onDetect: (BarcodeCapture capture) {
+            final List<Barcode> barcodes = capture.barcodes;
+            if (barcodes.isNotEmpty && barcodes.first.rawValue != null) {
+              widget.onScanned(barcodes.first.rawValue!);
+              scannerController.pause(); // Pause after first scan
+            }
+          },
+        ),
       ),
     );
   }

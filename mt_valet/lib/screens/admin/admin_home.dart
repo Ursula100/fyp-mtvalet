@@ -15,57 +15,41 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController oldPointsController = TextEditingController();
   final TextEditingController updatedPointsController = TextEditingController();
-  
-  bool isScanning = true; // Controls scanning
+  final TextEditingController statusMessageController = TextEditingController();
 
-  void getCustomerDetailsAndUpdatePoints(String userId) async {
+  bool isScanning = true; // Controls scanner state
+
+  Future<void> getCustomerDetailsAndUpdatePoints(String userId) async {
     try {
       DocumentSnapshot userDoc = await firestore.collection("customers").doc(userId).get();
 
-      if (userDoc.exists) {
-        String firstName = userDoc.get("firstName") ?? "";
-        String lastName = userDoc.get("lastName") ?? "";
-        int currentPoints = userDoc.get("points") ?? 0;
-
-        String fullName = "$firstName $lastName";
-        int newPoints = (currentPoints < 40) ? currentPoints + 10 : 0;
-
+      if (!userDoc.exists) {
         setState(() {
-          nameController.text = fullName;
-          oldPointsController.text = currentPoints.toString();
-          updatedPointsController.text = newPoints.toString();
-          isScanning = false; // Pause scanning but keep scanner visible
+          statusMessageController.text = "Customer not found";
         });
-
-        // Update Firestore
-        await firestore.collection("customers").doc(userId).update({"points": newPoints});
-        if(mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Points updated to $newPoints")),
-          );
-        }
-      } else {
-        if(mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Customer not found")),
-          );
-        }
-        restartScanner();
+        return;
       }
+
+      String firstName = userDoc.get("firstName") ?? "";
+      String lastName = userDoc.get("lastName") ?? "";
+      int currentPoints = userDoc.get("points") ?? 0;
+
+      int newPoints = (currentPoints < 40) ? currentPoints + 10 : 0;
+
+      await firestore.collection("customers").doc(userId).update({"points": newPoints});
+
+      setState(() {
+        nameController.text = "$firstName $lastName";
+        oldPointsController.text = currentPoints.toString();
+        updatedPointsController.text = newPoints.toString();
+        statusMessageController.text = "Points updated to $newPoints";
+        isScanning = false; // Pause scanner
+      });
     } catch (e) {
-      if(mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error fetching customer data")),
-        );
-      }
-      restartScanner();
+      setState(() {
+        statusMessageController.text = "Error updating points: $e";
+      });
     }
-  }
-
-  void restartScanner() {
-    setState(() {
-      isScanning = true;
-    });
   }
 
   void clearCustomerDetails() {
@@ -73,7 +57,8 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       nameController.clear();
       oldPointsController.clear();
       updatedPointsController.clear();
-      isScanning = true;
+      statusMessageController.clear();
+      isScanning = true; // Resume scanning
     });
   }
 
@@ -81,25 +66,44 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: false,
-        title: const Text('MT Valet',),
+        title: const Text("MT Valet"),
         backgroundColor: const Color.fromRGBO(17, 99, 239, 1),
         foregroundColor: Colors.white,
       ),
-      body: Column(
-        children: [
-          QRScannerWidget(
-            isScanning: isScanning, // Pass scanning status to the widget
-            onScanned: getCustomerDetailsAndUpdatePoints,
-          ),
-          
-          UserInfoWidget(
-            nameController: nameController,
-            oldPointsController: oldPointsController,
-            updatedPointsController: updatedPointsController,
-            onClear: clearCustomerDetails,
-          ),
-        ],
+      body: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          children: [
+            QRScannerWidget(
+              isScanning: isScanning,
+              onScanned: getCustomerDetailsAndUpdatePoints,
+            ),
+            const SizedBox(height: 16),
+            UserInfoWidget(
+              nameController: nameController,
+              oldPointsController: oldPointsController,
+              updatedPointsController: updatedPointsController,
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: statusMessageController,
+              readOnly: true,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: statusMessageController.text.contains("Error") ? Colors.red : Colors.green,
+                fontWeight: FontWeight.bold,
+              ),
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.all(10),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: clearCustomerDetails,
+              child: const Text("Clear"),
+            ),
+          ],
+        ),
       ),
     );
   }

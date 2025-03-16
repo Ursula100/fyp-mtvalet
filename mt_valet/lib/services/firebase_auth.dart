@@ -21,7 +21,7 @@ class FirebaseAuthServices {
       return credential.user;
     } catch(e){
       print("Error at signIN: ${e.toString()}");
-      rethrow;
+      // rethrow; no catches yet in login.dart
     }
   }
 

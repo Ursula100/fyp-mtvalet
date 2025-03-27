@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -13,14 +15,21 @@ class QRScannerWidget extends StatefulWidget {
 
 class QRScannerWidgetState extends State<QRScannerWidget> {
   final MobileScannerController scannerController = MobileScannerController(
+    torchEnabled: false,  // Ensures iOS compatibility
     detectionSpeed: DetectionSpeed.normal,
     formats: const [BarcodeFormat.qrCode],
     facing: CameraFacing.back,
+    detectionTimeoutMs: 1000, // Set timeout to 2000ms (2 seconds)
   );
+
+  bool isProcessing = false;
 
   @override
   void initState() {
     super.initState();
+    setState(() {
+      widget.isScanning;
+    });
     if (widget.isScanning) {
       scannerController.start();
     } else {
@@ -58,6 +67,10 @@ class QRScannerWidgetState extends State<QRScannerWidget> {
         child: MobileScanner(
           controller: scannerController,
           onDetect: (BarcodeCapture capture) {
+            if (!widget.isScanning){
+              scannerController.pause();
+              return;
+            }  // Ignore duplicate detections
             final List<Barcode> barcodes = capture.barcodes;
             if (barcodes.isNotEmpty && barcodes.first.rawValue != null) {
               widget.onScanned(barcodes.first.rawValue!);

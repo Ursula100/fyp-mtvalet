@@ -20,11 +20,13 @@ class CustomerHomeScreenState extends State<CustomerHomeScreen> {
  final FirebaseAuth auth = FirebaseAuth.instance;
  final FirebaseFirestore firestore = FirebaseFirestore.instance;
  late DocumentReference userDocumentRef;
+ int freeWash = 0;
 
   @override
   void initState() {
     super.initState();
     points = 0;
+    freeWash = (points == 40) ? 1 :0;
     _getUserData();
   }
 
@@ -50,6 +52,7 @@ class CustomerHomeScreenState extends State<CustomerHomeScreen> {
       if (snapshot.exists) {
         setState(() {
           points = snapshot.get("points") ?? 0;
+          freeWash = (points == 40) ? 1 :0;
         });
       }
     });
@@ -128,10 +131,10 @@ class CustomerHomeScreenState extends State<CustomerHomeScreen> {
                 children: [
                   const Text("You have ", style: TextStyle(fontSize: 16)),
                   Text(
-                    "$points",
+                    "$freeWash",
                     style: const TextStyle(fontSize: 34, color: Colors.red),
                   ),
-                  const Text(" points", style: TextStyle(fontSize: 16)),
+                  const Text(" free wash", style: TextStyle(fontSize: 16)),
                 ],
               ),
             ),

@@ -25,9 +25,10 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 
       if (!userDoc.exists) {
         setState(() {
-          statusMessageController.text = "Customer not found";
+          statusMessageController.text = "Error: Customer not found";
         });
         return;
+        
       }
 
       String firstName = userDoc.get("firstName") ?? "";
@@ -48,6 +49,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     } catch (e) {
       setState(() {
         statusMessageController.text = "Error updating points: $e";
+        isScanning = true;
       });
     }
   }
